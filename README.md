@@ -18,16 +18,18 @@ Le modèle LeNet-5 comprend les couches suivantes :
 
 ## Implémentation CUDA
 
-### Kernels CUDA et Fonctions Nécessaires
-
+### Kernels CUDA et Fonctions Nécessaires (dans layers.cu)
+0. Avant d'implémenter les differents layers, on se familiarise avec CUDA en implémentant diverses opérations nécessaire au matrice. Tout est résumé sur mat_mulp.cu
 1. **Conv2D**: Implémenter un kernel pour la convolution 2D.
 2. **AveragePooling2D**: Implémenter un kernel pour le sous-échantillonnage moyen.
 3. **Dense**: Implémenter un kernel pour la multiplication matricielle et l'addition du biais.
-4. **Activation Functions**: Utiliser `tanhf` pour `tanh` et implémenter un kernel pour `softmax`.
+4. **Activation Functions**: Utiliser `tanhf` pour `tanh` et implémenter un kernel pour `softmax` (assez avancé pas fait).
+
+Remarque : on travail déjà avec des données unidimentionnelles donc flatten n'est pas utile.
 
 ### Importation des Poids et Biais Pré-Entraînés
 
-- Les poids et biais pré-entraînés doivent être importés et transférés sur le GPU avant de lancer les kernels.
+- Les poids et biais pré-entraînés sur le fichier LeNet5.ipynb qui donne les fichers contenant les poids et biais FashionMNIST_weights.h5 doivent être importés et transférés sur le GPU avant de lancer les kernels, cela remplacent les matrices random initiées.
 
 ### Configuration de Grid et de Block
 
@@ -47,6 +49,58 @@ Le modèle LeNet-5 comprend les couches suivantes :
 ### Utilisation Pratique
 
 - Cette implémentation est idéale pour l'inférence rapide en utilisant des modèles pré-entraînés, profitant de la vitesse de traitement du GPU.
+
+### Temps gagnés en pratique 
+
+Il faudrait réimplémenter le model en CPU et mesurer pour chaque le temps de calcul, mais on peut faire un estimation car c'est le code qui détermine la parallélisation des calculs sur CUDA:
+
+dimBlock est configuré à (6, 6). Cela signifie que chaque bloc contient 
+6
+×
+6
+=
+36
+6×6=36 threads.
+dimGrid est calculé comme ((28 + 5) / 6, (28 + 5) / 6, 6), où (28 + dimBlock.x - 1) / dimBlock.x est une manière courante d'arrondir vers le haut pour s'assurer que la grille couvre toute la matrice d'entrée.
+Calculons dimGrid :
+
+La largeur et la hauteur de dimGrid seront 
+(
+28
++
+5
+)
+/
+6
+=
+33
+/
+6
+(28+5)/6=33/6, ce qui donne 5.5. En CUDA, le nombre de blocs est toujours un entier, donc cela sera arrondi à 6 blocs dans chaque dimension (x et y).
+La profondeur de dimGrid (dimension z) est 6, car vous avez 6 noyaux de convolution.
+Ainsi, dimGrid est approximativement (6, 6, 6).
+
+Le nombre total de blocs dans la grille est donc 
+6
+×
+6
+×
+6
+=
+216
+6×6×6=216 blocs.
+
+Le nombre total de threads qui peuvent être exécutés en parallèle est donc 
+36
+ 
+(threads par bloc)
+×
+216
+ 
+(blocs)
+=
+7776
+36(threads par bloc)×216(blocs)=7776 threads.
 
 ## Remarques
 
