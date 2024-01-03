@@ -52,10 +52,10 @@ Remarque : on travail déjà avec des données unidimentionnelles donc flatten n
 
 ### Temps gagnés en pratique 
 
-Il faudrait réimplémenter le model en CPU et mesurer pour chaque le temps de calcul, mais on peut faire un estimation car c'est le code qui détermine la parallélisation des calculs sur CUDA:
+Il faudrait réimplémenter le model en CPU et mesurer pour chaque le temps de calcul, mais on peut faire un estimation car c'est le code qui détermine la parallélisation des calculs sur CUDA, Calculons alors le nombre de threads sur notre implémentation de conv2D:
 
 dimBlock est configuré à (6, 6). Cela signifie que chaque bloc contient 6×6=36
-6×6=36 threads. dimGrid est calculé comme ((28 + 5) / 6, (28 + 5) / 6, 6), où (28 + dimBlock.x - 1) / dimBlock.x est une manière courante d'arrondir vers le haut pour s'assurer que la grille couvre toute la matrice d'entrée.
+6×6=36 threads. dimGrid est calculé comme ((28 + 5) / 6, (28 + 5) / 6, 6), où (28 + dimBlock.x - 1) / dimBlock.x
 Calculons dimGrid :
 
 La largeur et la hauteur de dimGrid seront  ( 28+5)/6=33/6 (28+5)/6=33/6, ce qui donne 5.5. En CUDA, le nombre de blocs est toujours un entier, donc cela sera arrondi à 6 blocs dans chaque dimension (x et y).
