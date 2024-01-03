@@ -74,4 +74,4 @@ Le code pourrait théoriquement rendre l'execution 7000 fois plus rapide. En pra
 
 - Cette implémentation suppose une familiarité avec la programmation CUDA et les concepts de base des réseaux de neurones.
 - Les détails tels que la gestion de la mémoire, la synchronisation des opérations et la gestion des erreurs sont cruciaux pour une implémentation réussie.
-- L'optimisation des performances peut nécessiter des ajustements selon les spécificités du matériel GPU utilisé.
+- L'optimisation des performances est différente selon les spécificités du matériel GPU utilisé, le temps de calcul mesuré sur mat_mulp.cu n'est pas le même avec une config PC différente.
