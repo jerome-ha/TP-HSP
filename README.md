@@ -66,7 +66,7 @@ Ainsi, dimGrid est approximativement (6, 6, 6).
 Le nombre total de blocs dans la grille est donc
 6×6×6=216 blocs.
 
-# Le nombre total de threads qui peuvent être exécutés en parallèle est donc approximativement 36(threads par bloc)×216(blocs)= ## 7776 threads.
+### Le nombre total de threads qui peuvent être exécutés en parallèle est donc approximativement 36(threads par bloc)×216(blocs)= 7776 threads.
 
 Le code pourrait théoriquement rendre l'execution 7000 fois plus rapide. En pratique, le nombre réel de threads exécutés en parallèle peut être limité par les capacités matérielles du GPU, telles que le nombre de cœurs CUDA et la quantité de mémoire disponible.
 
