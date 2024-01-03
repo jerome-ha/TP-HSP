@@ -54,53 +54,18 @@ Remarque : on travail déjà avec des données unidimentionnelles donc flatten n
 
 Il faudrait réimplémenter le model en CPU et mesurer pour chaque le temps de calcul, mais on peut faire un estimation car c'est le code qui détermine la parallélisation des calculs sur CUDA:
 
-dimBlock est configuré à (6, 6). Cela signifie que chaque bloc contient 
-6
-×
-6
-=
-36
-6×6=36 threads.
-dimGrid est calculé comme ((28 + 5) / 6, (28 + 5) / 6, 6), où (28 + dimBlock.x - 1) / dimBlock.x est une manière courante d'arrondir vers le haut pour s'assurer que la grille couvre toute la matrice d'entrée.
+dimBlock est configuré à (6, 6). Cela signifie que chaque bloc contient 6×6=36
+6×6=36 threads. dimGrid est calculé comme ((28 + 5) / 6, (28 + 5) / 6, 6), où (28 + dimBlock.x - 1) / dimBlock.x est une manière courante d'arrondir vers le haut pour s'assurer que la grille couvre toute la matrice d'entrée.
 Calculons dimGrid :
 
-La largeur et la hauteur de dimGrid seront 
-(
-28
-+
-5
-)
-/
-6
-=
-33
-/
-6
-(28+5)/6=33/6, ce qui donne 5.5. En CUDA, le nombre de blocs est toujours un entier, donc cela sera arrondi à 6 blocs dans chaque dimension (x et y).
+La largeur et la hauteur de dimGrid seront  ( 28+5)/6=33/6 (28+5)/6=33/6, ce qui donne 5.5. En CUDA, le nombre de blocs est toujours un entier, donc cela sera arrondi à 6 blocs dans chaque dimension (x et y).
 La profondeur de dimGrid (dimension z) est 6, car vous avez 6 noyaux de convolution.
 Ainsi, dimGrid est approximativement (6, 6, 6).
 
-Le nombre total de blocs dans la grille est donc 
-6
-×
-6
-×
-6
-=
-216
+Le nombre total de blocs dans la grille est donc 6×6×6=216
 6×6×6=216 blocs.
 
-Le nombre total de threads qui peuvent être exécutés en parallèle est donc 
-36
- 
-(threads par bloc)
-×
-216
- 
-(blocs)
-=
-7776
-36(threads par bloc)×216(blocs)=7776 threads.
+Le nombre total de threads qui peuvent être exécutés en parallèle est donc 36 (threads par bloc) ×216 (blocs)=7776 36(threads par bloc)×216(blocs)=7776 threads.
 
 ## Remarques
 
