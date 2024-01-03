@@ -122,7 +122,16 @@ __global__ void cudaAveragePooling(float *input, float *output, int inputWidth, 
     }
 }
 
-
+__global__ void denseLayer(float *input, float *weights, float *biases, float *output, int inputSize, int outputSize) {
+    int row = blockIdx.x * blockDim.x + threadIdx.x;
+    if (row < outputSize) {
+        float sum = 0.0;
+        for (int i = 0; i < inputSize; i++) {
+            sum += weights[row * inputSize + i] * input[i];
+        }
+        output[row] = sum + biases[row];
+    }
+}
 
 int main(int argc, char *argv[]){
 
